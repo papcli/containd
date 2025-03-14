@@ -1,8 +1,9 @@
 module containd.service.podman;
 
 import containd.engine;
+import containd.model;
 
-public class PodmanEngine : ContainerEngineAPI
+public class PodmanService// : ContainerEngineAPI
 {
     
 }
