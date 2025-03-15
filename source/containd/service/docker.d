@@ -21,9 +21,36 @@ public class DockerService : ContainerEngineAPI
         }
 
         return containers.output.split('\n')
-            .map!(id => getContainerById(id[1..$-1]))
+            .map!(id => getContainerById(id.clean))
             .array;
     }
+    
+    public string[] getAllContainerIds()
+    {
+        auto containers = execDockerCmd(["ps", "-a", "--format", "\"{{.ID}}\""]);
+        if (containers.status != 0)
+        {
+            throw new ContainerException("Something went wrong");
+        }
+
+        return containers.output.split('\n')
+            .map!(id => id.clean)
+            .array;
+    }
+    
+    public string[] getAllContainerNames()
+    {
+        auto containers = execDockerCmd(["ps", "-a", "--format", "\"{{.Names}}\""]);
+        if (containers.status != 0)
+        {
+            throw new ContainerException("Something went wrong");
+        }
+
+        return containers.output.split('\n')
+            .map!(name => name.clean)
+            .array;
+    }
+    
     public Container getContainerById(string id)
     {
         auto result = execDockerCmd(["container", "inspect", id]);
@@ -34,6 +61,7 @@ public class DockerService : ContainerEngineAPI
 
         return Container.fromDockerString(result.output);
     }
+    
     public Container getContainerByName(string name)
     {
         auto result = execDockerCmd(["container", "inspect", name]);

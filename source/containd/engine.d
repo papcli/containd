@@ -6,6 +6,8 @@ package interface ContainerEngineAPI
 {
     /++ Information Retrieval +/
     public Container[] getAllContainers();
+    public string[] getAllContainerIds();
+    public string[] getAllContainerNames();
     public Container getContainerById(string id);
     public Container getContainerByName(string name);
     /+

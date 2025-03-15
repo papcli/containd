@@ -10,6 +10,7 @@ void main()
 	writeln(execDockerCmd(["docker", "--version"]).output);
 
 	auto service = new DockerService();
+	writeln(service.getAllContainerNames);
 	//writeln(service.getAllContainers()[0].name);
-	service.getAllContainers().each!(c => writeln(c.name, " ", c.ports));
+	service.getAllContainers().each!(c => writeln(c.name, " ", c.ports, " ", c.health));
 }
