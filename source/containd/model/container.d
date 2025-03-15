@@ -11,6 +11,10 @@ public struct Container
     public string status;
     public string health;
     public string[int] ports;
+    
+    public string shortId() const @property
+    in (id.length > 12)
+    out (id; id.length == 12) => id[0..12];
 
     public static Container fromDockerString(string s)
     {
@@ -53,7 +57,73 @@ public struct Container
 
 public class ContainerList
 {
-    //
+    import containd : ContainerServiceClient;
+
+    private
+    {
+        ContainerServiceClient client;
+        Container[] containers;
+    }
+
+    public this(ContainerServiceClient client)
+    {
+        this.client = client;
+        containers = [];
+    }
+
+    int opApply(int delegate(Container) dg)
+    {
+        foreach (container; containers)
+        {
+            if (dg(container)) return 1;
+        }
+        return 0;
+    }
+
+    public Container[] getAll()
+    {
+        import std.algorithm : filter, any, each;
+        import std.array : array;
+        import std.stdio : writefln;
+
+        string[] missingIds = client.engine.getAllContainerIds()
+            .filter!(id => !this.containers.any!(c => c.shortId == id))
+            .array;
+
+        missingIds.each!(id => this.containers ~= client.getContainerById(id));
+
+        return this.containers;
+    }
+
+    public Container getById(string id)
+    {
+        import std.algorithm : find;
+
+        auto containers = containers.find!(c => c.id == id);
+        Container container;
+        if (containers is null || containers == [])
+        {
+            container = client.getContainerById(id);
+            this.containers ~= container;
+        }
+
+        return container;
+    }
+
+    public Container getByName(string name)
+    {
+        import std.algorithm : find;
+
+        auto containers = containers.find!(c => c.name == name);
+        Container container;
+        if (containers is null || containers == [])
+        {
+            container = client.getContainerByName(name);
+            this.containers ~= container;
+        }
+
+        return container;
+    }
 }
 
 public class ContainerException : Exception

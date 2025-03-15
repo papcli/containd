@@ -45,7 +45,7 @@ package interface ContainerEngineAPI
 
 public class ContainerServiceClient
 {
-    private ContainerEngineAPI engine;
+    package ContainerEngineAPI engine;
 
     private this(ContainerEngineAPI engine)
     {
@@ -55,12 +55,16 @@ public class ContainerServiceClient
     /++ Initialization +/
     public static ContainerServiceClient docker(string socket)
     {
-        return new ContainerServiceClient(null);
+        import containd.service : DockerService;
+    
+        return new ContainerServiceClient(new DockerService(socket));
     }
 
     public static ContainerServiceClient dockerFromEnv()
     {
-        return new ContainerServiceClient(null);
+        import containd.service : DockerService;
+    
+        return new ContainerServiceClient(new DockerService());
     }
 
     public static ContainerServiceClient podman(string socket)
@@ -74,4 +78,18 @@ public class ContainerServiceClient
     }
 
     /++ Information Retrieval +/
+    public ContainerList getAllContainers()
+    {
+        return new ContainerList(this);
+    }
+    
+    public Container getContainerById(string id)
+    {
+        return engine.getContainerById(id);
+    }
+    
+    public Container getContainerByName(string name)
+    {
+        return engine.getContainerByName(name);
+    }
 }

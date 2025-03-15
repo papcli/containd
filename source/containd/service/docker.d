@@ -11,9 +11,19 @@ import std.stdio : writeln, writefln;
 
 public class DockerService : ContainerEngineAPI
 {
+    private string socket;
+    
+    public this(string socket = "unix:///var/run/docker.sock")
+    {
+        this.socket = socket;
+    }
+
     /++ Information Retrieval +/
     public Container[] getAllContainers()
     {
+        // Perhaps we should do this lazily and only initialize the containers when they are actually accessed
+        // ^^ Perhaps this should be done using the ContainerList class. But not in here. This should be done in the `ContainerServiceClient`
+    
         auto containers = execDockerCmd(["ps", "-a", "--format", "\"{{.ID}}\""]);
         if (containers.status != 0)
         {
