@@ -61,3 +61,35 @@ public Nullable!JSONValue tryGet(Nullable!JSONValue value, string child)
     try return Nullable!JSONValue(value.get[child]);
     catch (RangeError e) return Nullable!JSONValue.init;
 }
+
+/++
+ + Try to get a child object from a JSON object or return null.
+ +/
+public Nullable!JSONValue tryGet(JSONValue value, int index)
+{
+    import core.exception : RangeError;
+
+    if (value.isNull)
+    {
+        return Nullable!JSONValue.init;
+    }
+
+    try return Nullable!JSONValue(value[index]);
+    catch (RangeError e) return Nullable!JSONValue.init;
+}
+
+/++
+ + Try to get a child object from a JSON object or return null.
+ +/
+public Nullable!JSONValue tryGet(Nullable!JSONValue value, int index)
+{
+    import core.exception : RangeError;
+
+    if (value.isNull || value.get.isNull)
+    {
+        return Nullable!JSONValue.init;
+    }
+
+    try return Nullable!JSONValue(value.get[index]);
+    catch (RangeError e) return Nullable!JSONValue.init;
+}

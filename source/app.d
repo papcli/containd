@@ -12,5 +12,5 @@ void main()
 	auto service = new DockerService();
 	writeln(service.getAllContainerNames);
 	//writeln(service.getAllContainers()[0].name);
-	service.getAllContainers().each!(c => writeln(c.name, " ", c.ports, " ", c.health));
+	service.getAllContainers().each!(c => writeln(c.name, " ", c.ports, " ", c.health, " ", c.status, " ", c.image));
 }

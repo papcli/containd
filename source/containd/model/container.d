@@ -35,16 +35,16 @@ public struct Container
             .get!(JSONValue[string])
             .byKeyValue()
             .filter!(port => !port.value.isNull)
-            .map!(port => tuple(port.value[0]["HostPort"].get!string.to!int, port.key.to!string))
+            .map!(port => tuple(port.value.tryGet(0).tryGet("HostPort").getOr("0").to!int, port.key.to!string))
             .array
             .assocArray;
 
         return Container(
-            container["Id"].getOr("noid"),
-            container["Name"].getOr("noname").replace("/", ""),
-            container["Config"]["Image"].getOr("noimage"),
+            container.tryGet("Id").getOr("noid"),
+            container.tryGet("Name").getOr("noname").replace("/", ""),
+            container.tryGet("Config").tryGet("Image").getOr("noimage"),
             labels,
-            container["State"]["Status"].getOr("unknown"),
+            container.tryGet("State").tryGet("Status").getOr("unknown"),
             container.tryGet("State").tryGet("Health").tryGet("Status").getOr("unknown"),
             ports
         );
