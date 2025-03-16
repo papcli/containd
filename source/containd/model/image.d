@@ -62,7 +62,7 @@ public class ImageList
 
 public class ImageException : Exception
 {
-    this(string message)
+    public this(string message)
     {
         super(message);
     }

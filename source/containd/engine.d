@@ -17,10 +17,11 @@ package interface ContainerEngineAPI
     public Network[] getAllNetworks();
     public Network getNetworkById(string id);
     public Network getNetworkByName(string name);
-    /+
+
     public Volume[] getAllVolumes();
     public Volume getVolumeByName(string name);
 
+    /+
     /++ Container Management +/
     public bool runContainer(string image, string[] command /* TODO: More options */);
     public bool createContainer(string image, string[] command = null /* TODO: More options */);

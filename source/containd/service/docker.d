@@ -139,8 +139,27 @@ public class DockerService : ContainerEngineAPI
         return Network.fromDockerString(result.output);
     }
 
-    /*
-    public Volume[] getAllVolumes();
-    public Volume getVolumeByName(string name);
-    */
+    public Volume[] getAllVolumes()
+    {
+        auto volumes = execDockerCmd(["volume", "ls", "--format", "\"{{.Name}}\""]);
+        if (volumes.status != 0)
+        {
+            throw new VolumeException("Something went wrong");
+        }
+
+        return volumes.output.split('\n')
+            .map!(name => getVolumeByName(name.clean))
+            .array;
+    }
+    
+    public Volume getVolumeByName(string name)
+    {
+        auto result = execDockerCmd(["volume", "inspect", name]);
+        if (result.status != 0)
+        {
+            throw new VolumeException("No volume with the name '" ~ name ~ "' was found");
+        }
+
+        return Volume.fromDockerString(result.output);
+    }
 }

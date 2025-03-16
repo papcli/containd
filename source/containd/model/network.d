@@ -19,7 +19,7 @@ public struct Network
     public bool internal;
     public bool ingress;
     public bool attachable;
-    
+
     public string shortId() const @property
     in (id.length > 12)
     out (id; id.length == 12) => id[0..12];
@@ -41,7 +41,7 @@ public struct Network
             .map!(label => tuple(label.key.to!string, label.value.to!string))
             .array
             .assocArray;
-        
+
         // TODO: allow for multiple subnets, gateways and auxiliary (multiple configs), instead of using index 0
         string[string] auxiliaries;
         if (opt(network["IPAM"]["Config"][0]["AuxiliaryAddresses"]).exists) auxiliaries = network["IPAM"]["Config"][0]["AuxiliaryAddresses"]
@@ -93,7 +93,7 @@ public class NetworkList
 
 public class NetworkException : Exception
 {
-    this(string message)
+    public this(string message)
     {
         super(message);
     }
