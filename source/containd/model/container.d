@@ -21,12 +21,18 @@ public struct Container
     public string health;
     /// The ports of the container.
     public string[int] ports;
+    /// The networks of the container.
+    public string[] networks;
+    /// The environment variables of the container.
+    public string[string] environment;
+    /// The mounts of the container.
+    public ContainerMount[] mounts;
 
     /// The id of the container in short form (12 characters).
     public string shortId() const @property
     in (id.length > 12)
     out (id; id.length == 12) => id[0..12];
-    
+
     /// Compares the id of the container with the given id.
     public bool cmpId(string id) const => this.id == id || this.shortId == id;
 
@@ -39,7 +45,7 @@ public struct Container
         import std.algorithm : map, filter;
         import std.typecons : tuple;
         import std.array : assocArray, split, array, replace;
-        import stdx.data.json : parseJSONValue, JSONValue, opt, toJSONValue;
+        import stdx.data.json : JSONValue, opt, toJSONValue, toJSON;
 
         JSONValue container = toJSONValue(s)[0];
 
@@ -59,6 +65,27 @@ public struct Container
             .map!(port => tuple(port.value.tryGet(0).tryGet("HostPort").getOr("0").to!int, port.key.to!string))
             .array
             .assocArray;
+            
+        string[] networks_;
+        if (opt(container["NetworkSettings"]["Networks"]).exists) networks_ = container["NetworkSettings"]["Networks"]
+            .get!(JSONValue[string])
+            .byKeyValue()
+            .map!(network => network.key.to!string)
+            .array;
+            
+        string[string] environment_;
+        if (opt(container["Config"]["Env"]).exists) environment_ = container["Config"]["Env"]
+            .get!(JSONValue[])
+            .map!(env => env.get!string.split("="))
+            .map!(env => tuple(env[0], env[1]))
+            .array
+            .assocArray;
+            
+        ContainerMount[] mounts_;
+        if (opt(container["Mounts"]).exists) mounts_ = container["Mounts"]
+            .get!(JSONValue[])
+            .map!(mount => ContainerMount.fromJSON(mount))
+            .array;
 
         return Container(
             container.tryGet("Id").getOr("noid"),
@@ -67,7 +94,40 @@ public struct Container
             labels_,
             container.tryGet("State").tryGet("Status").getOr("unknown"),
             container.tryGet("State").tryGet("Health").tryGet("Status").getOr("unknown"),
-            ports_
+            ports_,
+            networks_,
+            environment_,
+            mounts_
+        );
+    }
+}
+
+/++
+ + A struct that represents a container mount.
+ +/
+struct ContainerMount
+{
+    /// The container source of the mount.
+    public string source;
+    /// The local destination of the mount.
+    public string destination;
+    /// The mode of the mount.
+    public string mode;
+    /// The type of the mount.
+    public string type;
+    
+    import stdx.data.json : JSONValue;
+    
+    /++
+     + Creates a `ContainerMount` object from a Docker JSON object.
+     +/
+    public static ContainerMount fromJSON(JSONValue mount)
+    {   
+        return ContainerMount(
+            mount.tryGet("Source").getOr(""),
+            mount.tryGet("Destination").getOr(""),
+            mount.tryGet("Mode").getOr(""),
+            mount.tryGet("Type").getOr("")
         );
     }
 }
@@ -100,7 +160,7 @@ public class ContainerList
         {
             if (dg(container)) return 1;
         }
-        
+
         return 0;
     }
 
