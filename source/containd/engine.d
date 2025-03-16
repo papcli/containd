@@ -10,10 +10,10 @@ package interface ContainerEngineAPI
     public string[] getAllContainerNames();
     public Container getContainerById(string id);
     public Container getContainerByName(string name);
-    /+
+    
     public Image[] getAllImages();
     public Image getImageById(string id);
-
+    /+
     public Network[] getAllNetworks();
     public Network getNetworkByName(string name);
 

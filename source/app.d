@@ -16,11 +16,14 @@ void main()
 
 	auto client = ContainerServiceClient.dockerFromEnv();
 	auto containers = client.getAllContainers();
-	containers.getByName("containerName");
+	containers.getByName("");
 	foreach (container; containers)
 	{
 	    writeln(container.name);
 	}
 	containers.getAll();
 	containers.each!(c => writeln(c.name));
+	
+	auto service = new DockerService();
+	writeln(service.getImageById("").size);
 }

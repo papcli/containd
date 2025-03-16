@@ -21,9 +21,6 @@ public class DockerService : ContainerEngineAPI
     /++ Information Retrieval +/
     public Container[] getAllContainers()
     {
-        // Perhaps we should do this lazily and only initialize the containers when they are actually accessed
-        // ^^ Perhaps this should be done using the ContainerList class. But not in here. This should be done in the `ContainerServiceClient`
-    
         auto containers = execDockerCmd(["ps", "-a", "--format", "\"{{.ID}}\""]);
         if (containers.status != 0)
         {
@@ -83,10 +80,31 @@ public class DockerService : ContainerEngineAPI
         return Container.fromDockerString(result.output);
     }
 
-    /*
-    public Image[] getAllImages();
-    public Image getImageById(string id);
+    public Image[] getAllImages()
+    {
+        auto images = execDockerCmd(["image", "ls", "-a", "--format", "\"{{.ID}}\""]);
+        if (images.status != 0)
+        {
+            throw new ImageException("Something went wrong");
+        }
 
+        return images.output.split('\n')
+            .map!(id => getImageById(id.clean))
+            .array;
+    }
+    
+    public Image getImageById(string id)
+    {
+        auto result = execDockerCmd(["image", "inspect", id]);
+        if (result.status != 0)
+        {
+            throw new ImageException("No image with the ID '" ~ id ~ "' was found");
+        }
+
+        return Image.fromDockerString(result.output);
+    }
+    
+    /*
     public Network[] getAllNetworks();
     public Network getNetworkByName(string name);
 
