@@ -40,6 +40,7 @@ package interface ContainerEngineAPI
     public bool copyFilesContainer(string id, string sourcePath, string destinationPath);
     public bool execContainerCommand(string id, string command, bool detach = false, bool privileged = false, bool interactive = false, string[string] env = null, string workdir = "", string user = ""); // TODO: multi-line
     public bool getContainerLogs(string id, ref string logs, int tail = 0, string since = "", string until = "");
+    
     /++ Image Management +/
 
     /++ Network Management +/
@@ -97,5 +98,40 @@ public class ContainerServiceClient
     public Container getContainerByName(string name)
     {
         return engine.getContainerByName(name);
+    }
+    
+    public ImageList getAllImages()
+    {
+        return new ImageList(this);
+    }
+    
+    public Image getImageById(string id)
+    {
+        return engine.getImageById(id);
+    }
+    
+    public NetworkList getAllNetworks()
+    {
+        return new NetworkList(this);
+    }
+    
+    public Network getNetworkById(string id)
+    {
+        return engine.getNetworkById(id);
+    }
+    
+    public Network getNetworkByName(string name)
+    {
+        return engine.getNetworkByName(name);
+    }
+    
+    public VolumeList getAllVolumes()
+    {
+        return new VolumeList(this);
+    }
+    
+    public Volume getVolumeByName(string name)
+    {
+        return engine.getVolumeByName(name);
     }
 }

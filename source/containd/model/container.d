@@ -26,9 +26,12 @@ public struct Container
     public string shortId() const @property
     in (id.length > 12)
     out (id; id.length == 12) => id[0..12];
+    
+    /// Compares the id of the container with the given id.
+    public bool cmpId(string id) const => this.id == id || this.shortId == id;
 
     /++
-     + Creates a container from a Docker JSON string.
+     + Creates a `Container` object from a Docker JSON string.
      +/
     public static Container fromDockerString(string s)
     {
@@ -40,16 +43,16 @@ public struct Container
 
         JSONValue container = toJSONValue(s)[0];
 
-        string[string] labels;
-        if (opt(container["Config"]["Labels"]).exists) labels = container["Config"]["Labels"]
+        string[string] labels_;
+        if (opt(container["Config"]["Labels"]).exists) labels_ = container["Config"]["Labels"]
             .get!(JSONValue[string])
             .byKeyValue()
             .map!(label => tuple(label.key.to!string, label.value.to!string))
             .array
             .assocArray;
 
-        string[int] ports;
-        if (opt(container["NetworkSettings"]["Ports"]).exists) ports = container["NetworkSettings"]["Ports"]
+        string[int] ports_;
+        if (opt(container["NetworkSettings"]["Ports"]).exists) ports_ = container["NetworkSettings"]["Ports"]
             .get!(JSONValue[string])
             .byKeyValue()
             .filter!(port => !port.value.isNull)
@@ -61,10 +64,10 @@ public struct Container
             container.tryGet("Id").getOr("noid"),
             container.tryGet("Name").getOr("noname").replace("/", ""),
             container.tryGet("Config").tryGet("Image").getOr("noimage"),
-            labels,
+            labels_,
             container.tryGet("State").tryGet("Status").getOr("unknown"),
             container.tryGet("State").tryGet("Health").tryGet("Status").getOr("unknown"),
-            ports
+            ports_
         );
     }
 }
@@ -130,7 +133,7 @@ public class ContainerList
     {
         import std.algorithm : find;
 
-        auto containers = containers.find!(c => c.id == id);
+        auto containers = containers.find!(c => c.cmpId(id));
         Container container;
         if (containers is null || containers == [])
         {
