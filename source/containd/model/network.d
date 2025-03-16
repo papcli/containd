@@ -75,19 +75,19 @@ public struct Network
             .assocArray;
 
         return Network(
-            network.tryGet("Name").getOr("noname"),
-            network.tryGet("Id").getOr("noid"),
-            DateTime.fromISOExtString(network.tryGet("Created").getOr("1970-01-01T00:00:00Z").split('.')[0]),
-            network.tryGet("Scope").getOr("local").valueToEnum!NetworkScope.get,
-            network.tryGet("Driver").getOr("null").valueToEnum!NetworkDriver.get,
-            network.tryGet("EnableIPv6").getOr(false).to!bool,
+            network.find("Name").orElse("noname"),
+            network.find("Id").orElse("noid"),
+            DateTime.fromISOExtString(network.find("Created").orElse("1970-01-01T00:00:00Z").split('.')[0]),
+            network.find("Scope").orElse("local").valueToEnum!NetworkScope.get,
+            network.find("Driver").orElse("null").valueToEnum!NetworkDriver.get,
+            network.find("EnableIPv6").orElse(false).to!bool,
             labels_,
-            network.tryGet("IPAM").tryGet("Config").tryGet(0).tryGet("Subnet").getOr(""),
-            network.tryGet("IPAM").tryGet("Config").tryGet(0).tryGet("Gateway").getOr(""),
+            network.find("IPAM").find("Config").find(0).find("Subnet").orElse(""),
+            network.find("IPAM").find("Config").find(0).find("Gateway").orElse(""),
             auxiliaries_,
-            network.tryGet("Internal").getOr(false).to!bool,
-            network.tryGet("Ingress").getOr(false).to!bool,
-            network.tryGet("Attachable").getOr(false).to!bool
+            network.find("Internal").orElse(false).to!bool,
+            network.find("Ingress").orElse(false).to!bool,
+            network.find("Attachable").orElse(false).to!bool
         );
     }
 }

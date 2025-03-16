@@ -45,12 +45,12 @@ public struct Volume
             .assocArray;
 
         return Volume(
-            volume.tryGet("Name").getOr("noname"),
-            volume.tryGet("Driver").getOr("null"),
-            volume.tryGet("Mountpoint").getOr("nomountpoint"),
-            volume.tryGet("Scope").getOr("local"),
+            volume.find("Name").orElse("noname"),
+            volume.find("Driver").orElse("null"),
+            volume.find("Mountpoint").orElse("nomountpoint"),
+            volume.find("Scope").orElse("local"),
             labels_,
-            DateTime.fromISOExtString(volume.tryGet("CreatedAt").getOr("1970-01-01T00:00:00Z").split('.')[0])
+            DateTime.fromISOExtString(volume.find("CreatedAt").orElse("1970-01-01T00:00:00Z").split('.')[0])
         );
     }
 }

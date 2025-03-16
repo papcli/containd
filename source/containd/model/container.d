@@ -62,7 +62,7 @@ public struct Container
             .get!(JSONValue[string])
             .byKeyValue()
             .filter!(port => !port.value.isNull)
-            .map!(port => tuple(port.value.tryGet(0).tryGet("HostPort").getOr("0").to!int, port.key.to!string))
+            .map!(port => tuple(port.value.find(0).find("HostPort").orElse("0").to!int, port.key.to!string))
             .array
             .assocArray;
             
@@ -88,12 +88,12 @@ public struct Container
             .array;
 
         return Container(
-            container.tryGet("Id").getOr("noid"),
-            container.tryGet("Name").getOr("noname").replace("/", ""),
-            container.tryGet("Config").tryGet("Image").getOr("noimage"),
+            container.find("Id").orElse("noid"),
+            container.find("Name").orElse("noname").replace("/", ""),
+            container.find("Config").find("Image").orElse("noimage"),
             labels_,
-            container.tryGet("State").tryGet("Status").getOr("unknown"),
-            container.tryGet("State").tryGet("Health").tryGet("Status").getOr("unknown"),
+            container.find("State").find("Status").orElse("unknown"),
+            container.find("State").find("Health").find("Status").orElse("unknown"),
             ports_,
             networks_,
             environment_,
@@ -124,10 +124,10 @@ struct ContainerMount
     public static ContainerMount fromJSON(JSONValue mount)
     {   
         return ContainerMount(
-            mount.tryGet("Source").getOr(""),
-            mount.tryGet("Destination").getOr(""),
-            mount.tryGet("Mode").getOr(""),
-            mount.tryGet("Type").getOr("")
+            mount.find("Source").orElse(""),
+            mount.find("Destination").orElse(""),
+            mount.find("Mode").orElse(""),
+            mount.find("Type").orElse("")
         );
     }
 }

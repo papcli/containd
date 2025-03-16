@@ -7,7 +7,7 @@ import stdx.data.json : JSONValue, opt;
 /++
  + Try to get a value from a JSON object or return a fallback value.
  +/
-public T getOr(T)(JSONValue value, T fallback)
+public T orElse(T)(JSONValue value, T fallback)
 {
     if (value.isNull)
     {
@@ -20,7 +20,7 @@ public T getOr(T)(JSONValue value, T fallback)
 /++
  + Try to get a value from a JSON object or return a fallback value.
  +/
-public T getOr(T)(Nullable!JSONValue value, T fallback)
+public T orElse(T)(Nullable!JSONValue value, T fallback)
 {
     if (value.isNull || value.get.isNull)
     {
@@ -33,7 +33,7 @@ public T getOr(T)(Nullable!JSONValue value, T fallback)
 /++
  + Try to get a child object from a JSON object or return null.
  +/
-public Nullable!JSONValue tryGet(JSONValue value, string child)
+public Nullable!JSONValue find(JSONValue value, string child)
 {
     import core.exception : RangeError;
 
@@ -49,7 +49,7 @@ public Nullable!JSONValue tryGet(JSONValue value, string child)
 /++
  + Try to get a child object from a JSON object or return null.
  +/
-public Nullable!JSONValue tryGet(Nullable!JSONValue value, string child)
+public Nullable!JSONValue find(Nullable!JSONValue value, string child)
 {
     import core.exception : RangeError;
 
@@ -65,7 +65,7 @@ public Nullable!JSONValue tryGet(Nullable!JSONValue value, string child)
 /++
  + Try to get a child object from a JSON object or return null.
  +/
-public Nullable!JSONValue tryGet(JSONValue value, int index)
+public Nullable!JSONValue find(JSONValue value, int index)
 {
     import core.exception : RangeError;
 
@@ -81,7 +81,7 @@ public Nullable!JSONValue tryGet(JSONValue value, int index)
 /++
  + Try to get a child object from a JSON object or return null.
  +/
-public Nullable!JSONValue tryGet(Nullable!JSONValue value, int index)
+public Nullable!JSONValue find(Nullable!JSONValue value, int index)
 {
     import core.exception : RangeError;
 

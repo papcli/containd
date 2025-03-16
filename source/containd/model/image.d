@@ -61,13 +61,13 @@ public struct Image
             .assocArray;
 
         return Image(
-            image.tryGet("Id").getOr("noid"),
+            image.find("Id").orElse("noid"),
             tags_,
             labels_,
-            DateTime.fromISOExtString(image.tryGet("Created").getOr("1970-01-01T00:00:00Z").split('.')[0]),
-            image.tryGet("Size").getOr(0L).to!long,
-            image.tryGet("Architecture").getOr(""),
-            image.tryGet("Os").getOr("")
+            DateTime.fromISOExtString(image.find("Created").orElse("1970-01-01T00:00:00Z").split('.')[0]),
+            image.find("Size").orElse(0L).to!long,
+            image.find("Architecture").orElse(""),
+            image.find("Os").orElse("")
         );
     }
 }
