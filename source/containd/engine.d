@@ -12,13 +12,17 @@ package interface ContainerEngineAPI
     public Container getContainerByName(string name);
     
     public Image[] getAllImages();
+    public string[] getAllImageIds();
     public Image getImageById(string id);
     
     public Network[] getAllNetworks();
+    public string[] getAllNetworkIds();
+    public string[] getAllNetworkNames();
     public Network getNetworkById(string id);
     public Network getNetworkByName(string name);
 
     public Volume[] getAllVolumes();
+    public string[] getAllVolumeNames();
     public Volume getVolumeByName(string name);
 
     /+

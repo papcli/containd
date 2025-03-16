@@ -92,6 +92,19 @@ public class DockerService : ContainerEngineAPI
             .map!(id => getImageById(id.clean))
             .array;
     }
+    
+    public string[] getAllImageIds()
+    {
+        auto images = execDockerCmd(["image", "ls", "-a", "--format", "\"{{.ID}}\""]);
+        if (images.status != 0)
+        {
+            throw new ImageException("Something went wrong");
+        }
+
+        return images.output.split('\n')
+            .map!(id => id.clean)
+            .array;
+    }
 
     public Image getImageById(string id)
     {
@@ -114,6 +127,32 @@ public class DockerService : ContainerEngineAPI
 
         return networks.output.split('\n')
             .map!(id => getNetworkById(id.clean))
+            .array;
+    }
+    
+    public string[] getAllNetworkIds()
+    {
+        auto networks = execDockerCmd(["network", "ls", "--format", "\"{{.ID}}\""]);
+        if (networks.status != 0)
+        {
+            throw new NetworkException("Something went wrong");
+        }
+
+        return networks.output.split('\n')
+            .map!(id => id.clean)
+            .array;
+    }
+    
+    public string[] getAllNetworkNames()
+    {
+        auto networks = execDockerCmd(["network", "ls", "--format", "\"{{.Name}}\""]);
+        if (networks.status != 0)
+        {
+            throw new NetworkException("Something went wrong");
+        }
+
+        return networks.output.split('\n')
+            .map!(name => name.clean)
             .array;
     }
 
@@ -149,6 +188,19 @@ public class DockerService : ContainerEngineAPI
 
         return volumes.output.split('\n')
             .map!(name => getVolumeByName(name.clean))
+            .array;
+    }
+    
+    public string[] getAllVolumeNames()
+    {
+        auto volumes = execDockerCmd(["volume", "ls", "--format", "\"{{.Name}}\""]);
+        if (volumes.status != 0)
+        {
+            throw new VolumeException("Something went wrong");
+        }
+
+        return volumes.output.split('\n')
+            .map!(name => name.clean)
             .array;
     }
     
