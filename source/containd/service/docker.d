@@ -92,7 +92,7 @@ public class DockerService : ContainerEngineAPI
             .map!(id => getImageById(id.clean))
             .array;
     }
-    
+
     public string[] getAllImageIds()
     {
         auto images = execDockerCmd(["image", "ls", "-a", "--format", "\"{{.ID}}\""]);
@@ -129,7 +129,7 @@ public class DockerService : ContainerEngineAPI
             .map!(id => getNetworkById(id.clean))
             .array;
     }
-    
+
     public string[] getAllNetworkIds()
     {
         auto networks = execDockerCmd(["network", "ls", "--format", "\"{{.ID}}\""]);
@@ -142,7 +142,7 @@ public class DockerService : ContainerEngineAPI
             .map!(id => id.clean)
             .array;
     }
-    
+
     public string[] getAllNetworkNames()
     {
         auto networks = execDockerCmd(["network", "ls", "--format", "\"{{.Name}}\""]);
@@ -190,7 +190,7 @@ public class DockerService : ContainerEngineAPI
             .map!(name => getVolumeByName(name.clean))
             .array;
     }
-    
+
     public string[] getAllVolumeNames()
     {
         auto volumes = execDockerCmd(["volume", "ls", "--format", "\"{{.Name}}\""]);
@@ -203,7 +203,7 @@ public class DockerService : ContainerEngineAPI
             .map!(name => name.clean)
             .array;
     }
-    
+
     public Volume getVolumeByName(string name)
     {
         auto result = execDockerCmd(["volume", "inspect", name]);
@@ -213,5 +213,102 @@ public class DockerService : ContainerEngineAPI
         }
 
         return Volume.fromDockerString(result.output);
+    }
+
+    /++ Container Management +/
+    public bool runContainer(string image, string[] command, string name = "", string network = "", string[string] volumes = null,
+        string[string] env = null, string envFile = "", string[string] labels = null, string labelFile = "", string hostname = "",
+        bool privileged = false, bool remove = false, bool detach = false, string dns = "", string user = "", string restart = "")
+    {
+        string[] cmd = ["container", "run"];
+        if (name != "")
+        {
+            cmd ~= "--name " ~ name;
+        }
+        if (network != "")
+        {
+            cmd ~= "--network " ~ network;
+        }
+        if (volumes !is null)
+        {
+            foreach (volume; volumes)
+            {
+                cmd ~= "--volume " ~ volume[0] ~ ":" ~ volume[1];
+            }
+        }
+        if (env !is null)
+        {
+            foreach (envVar; env.byKeyValue)
+            {
+                if (envVar.value != "")
+                {
+                    cmd ~= "--env " ~ envVar.key ~ "=" ~ envVar.value;
+                }
+                else
+                {
+                    cmd ~= "--env " ~ envVar.key;
+                }
+            }
+        }
+        if (envFile != "")
+        {
+            cmd ~= "--env-file " ~ envFile;
+        }
+        if (labels !is null)
+        {
+            foreach (label; labels.byKeyValue)
+            {
+                if (label.value != "")
+                {
+                    cmd ~= "--label " ~ label.key ~ "=" ~ label.value;
+                }
+                else
+                {
+                    cmd ~= "--label " ~ label.key;
+                }
+            }
+        }
+        if (labelFile != "")
+        {
+            cmd ~= "--label-file " ~ labelFile;
+        }
+        if (hostname != "")
+        {
+            cmd ~= "--hostname " ~ hostname;
+        }
+        if (privileged)
+        {
+            cmd ~= "--privileged";
+        }
+        if (remove)
+        {
+            cmd ~= "--rm";
+        }
+        if (detach)
+        {
+            cmd ~= "--detach";
+        }
+        if (dns != "")
+        {
+            cmd ~= "--dns " ~ dns;
+        }
+        if (user != "")
+        {
+            cmd ~= "--user " ~ user;
+        }
+        if (restart != "")
+        {
+            cmd ~= "--restart " ~ restart;
+        }
+
+        cmd ~= image;
+        if (command !is null)
+        {
+            cmd ~= command;
+        }
+
+        writeln(cmd);
+        auto result = execDockerCmd(cmd);
+        return result.status == 0;
     }
 }

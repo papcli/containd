@@ -61,7 +61,7 @@ public struct Network
         if (opt(network["Labels"]).exists) labels_ = network["Labels"]
             .get!(JSONValue[string])
             .byKeyValue()
-            .map!(label => tuple(label.key.to!string, label.value.to!string))
+            .map!(label => tuple(label.key, label.value.get!string))
             .array
             .assocArray;
 
@@ -70,7 +70,7 @@ public struct Network
         if (opt(network["IPAM"]["Config"][0]["AuxiliaryAddresses"]).exists) auxiliaries_ = network["IPAM"]["Config"][0]["AuxiliaryAddresses"]
             .get!(JSONValue[string])
             .byKeyValue()
-            .map!(aux => tuple(aux.key.to!string, aux.value.to!string))
+            .map!(aux => tuple(aux.key, aux.value.get!string))
             .array
             .assocArray;
 

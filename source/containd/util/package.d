@@ -1,5 +1,6 @@
 module containd.util;
 
+public import containd.util.div;
 public import containd.util.enumerations;
 public import containd.util.json;
 public import containd.util.strings;

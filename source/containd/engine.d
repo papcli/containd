@@ -25,9 +25,11 @@ package interface ContainerEngineAPI
     public string[] getAllVolumeNames();
     public Volume getVolumeByName(string name);
 
-    /+
     /++ Container Management +/
-    public bool runContainer(string image, string[] command /* TODO: More options */);
+    public bool runContainer(string image, string[] command, string name = "", string network = "", string[string] volumes = null,
+        string[string] env = null, string envFile = "", string[string] labels = null, string labelFile = "", string hostname = "",
+        bool privileged = false, bool remove = false, bool detach = false, string dns = "", string user = "", string restart = "");
+    /+
     public bool createContainer(string image, string[] command = null /* TODO: More options */);
     public bool startContainer(string id, bool attach = false, bool interactive = false);
     public bool stopContainer(string id, uint signal = 0, int timeout = 0);

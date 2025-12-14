@@ -16,14 +16,31 @@ void main()
 
 	auto client = ContainerServiceClient.dockerFromEnv();
 	auto containers = client.getAllContainers();
-	containers.getByName("");
+	auto container = containers.getByName("homepage");
+	writeln(container.networks);
+	/*
 	foreach (container; containers)
 	{
 	    writeln(container.name);
 	}
 	containers.getAll();
 	containers.each!(c => writeln(c.name));
+
+	auto service = new DockerService();
+	//writeln(service.getImageById("").size);
+	writeln(service.getNetworkByName("br0").auxiliaries);
+	*/
 	
 	auto service = new DockerService();
-	writeln(service.getImageById("").size);
+	writeln(service.runContainer("hello-world", null, name: "hello-world", remove: true));
+	
+    auto x = Optional!int.of(5);
+    writeln(x.isPresent);
+    x.ifPresent(a => writeln(a));
+    
+    auto y = Optional!int.empty();
+    writeln(y.isPresent);
+    
+    auto z = Optional!int.ofNullable(null);
+    writeln(z.isPresent);
 }

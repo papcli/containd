@@ -40,7 +40,7 @@ public struct Volume
         if (opt(volume["Labels"]).exists) labels_ = volume["Labels"]
             .get!(JSONValue[string])
             .byKeyValue()
-            .map!(label => tuple(label.key.to!string, label.value.to!string))
+            .map!(label => tuple(label.key, label.value.get!string))
             .array
             .assocArray;
 

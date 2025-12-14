@@ -53,7 +53,7 @@ public struct Container
         if (opt(container["Config"]["Labels"]).exists) labels_ = container["Config"]["Labels"]
             .get!(JSONValue[string])
             .byKeyValue()
-            .map!(label => tuple(label.key.to!string, label.value.to!string))
+            .map!(label => tuple(label.key, label.value.get!string))
             .array
             .assocArray;
 
@@ -62,7 +62,7 @@ public struct Container
             .get!(JSONValue[string])
             .byKeyValue()
             .filter!(port => !port.value.isNull)
-            .map!(port => tuple(port.value.find(0).find("HostPort").orElse("0").to!int, port.key.to!string))
+            .map!(port => tuple(port.value.find(0).find("HostPort").orElse("0").to!int, port.key))
             .array
             .assocArray;
             
@@ -70,7 +70,7 @@ public struct Container
         if (opt(container["NetworkSettings"]["Networks"]).exists) networks_ = container["NetworkSettings"]["Networks"]
             .get!(JSONValue[string])
             .byKeyValue()
-            .map!(network => network.key.to!string)
+            .map!(network => network.key)
             .array;
             
         string[string] environment_;

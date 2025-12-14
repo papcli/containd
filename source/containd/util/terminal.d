@@ -1,6 +1,6 @@
 module containd.util.terminal;
 
-static immutable DOCKER_COMMAND = ["docker"];
+static immutable DOCKER_COMMAND = ["docker", "-H=192.168.50.107:2375"];
 static immutable PODMAN_COMMAND = ["podman"];
 
 /++
